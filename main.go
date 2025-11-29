@@ -17,6 +17,7 @@ type apiConfig struct {
 	fileserverHits atomic.Int32
 	platform       string
 	jwtSecret      string
+	apiKey         string
 }
 
 func main() {
@@ -43,6 +44,11 @@ func main() {
 		log.Fatal("JWT_SECRET environment variable is not set")
 	}
 
+	apiKey := os.Getenv("POLKA_KEY")
+	if apiKey == "" {
+		log.Fatal("POLKA_KEY environment variable is not set")
+	}
+
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("error connecting to database: %v", err)
@@ -54,6 +60,7 @@ func main() {
 		fileserverHits: atomic.Int32{},
 		platform:       platform,
 		jwtSecret:      jwtSecret,
+		apiKey:         apiKey,
 	}
 
 	mux := http.NewServeMux()
